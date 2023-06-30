@@ -54,19 +54,3 @@ def test_tokens(tokens, sender, recipient):
         assert token.balanceOf(sender) == 8000
         assert token.balanceOf(recipient) == 2000
         assert token.allowance(sender, recipient) == 0
-
-def test_solady(solady, sender, recipient):
-    assert solady.balanceOf(sender) == 10000
-    assert solady.balanceOf(recipient) == 0
-    solady.transfer(recipient, 1000, sender=sender)
-    assert solady.balanceOf(sender) == 9000
-    assert solady.balanceOf(recipient) == 1000
-
-    # test allowance
-    assert solady.allowance(sender, recipient) == 0
-    solady.approve(recipient, 1000, sender=sender)
-    assert solady.allowance(sender, recipient) == 1000
-    solady.transferFrom(sender, recipient, 1000, sender=recipient)
-    assert solady.balanceOf(sender) == 8000
-    assert solady.balanceOf(recipient) == 2000
-    assert solady.allowance(sender, recipient) == 0
