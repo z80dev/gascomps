@@ -1,0 +1,27 @@
+name: gascomps
+
+plugins:
+  - name: solidity
+  - name: vyper
+  - name: foundry
+
+default_ecosystem: ethereum
+
+ethereum:
+  default_network: local
+  local:
+    default_provider: foundry
+
+dependencies:
+  - name: Solady
+    github: Vectorized/solady
+    ref: main
+    contracts_folder: src
+  - name: OpenZeppelin
+    github: OpenZeppelin/openzeppelin-contracts
+    ref: master
+
+solidity:
+  import_remapping:
+    - "@solady=Solady/main"
+    - "@openzeppelin=OpenZeppelin/master"
