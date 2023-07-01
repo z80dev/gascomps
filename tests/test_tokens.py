@@ -35,8 +35,19 @@ def oztoken(project, deployer, sender):
     return oztoken
 
 @pytest.fixture
-def tokens(solady, vypertoken, oztoken):
-    return solady, vypertoken, oztoken
+def weth9(project, deployer, sender):
+    print("weth9")
+    weth9 = project.WETH9.deploy(sender=deployer)
+    print("weth9", weth9)
+    project.provider.set_balance(deployer.address, 10000 * 10 ** 18)
+    deployer.transfer(weth9, 1000 * 10 ** 18)
+
+    weth9.transfer(sender, 10000, sender=deployer)
+    return weth9
+
+@pytest.fixture
+def tokens(solady, vypertoken, oztoken, weth9):
+    return solady, vypertoken, oztoken, weth9
 
 def test_tokens(tokens, sender, recipient):
     for token in tokens:

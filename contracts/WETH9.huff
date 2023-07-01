@@ -1,0 +1,591 @@
+/* ABI Definitions */
+#define function name() view returns(string)
+#define function symbol() view returns(string)
+#define function decimals() view returns(uint8)
+
+#define function totalSupply() view returns(uint256)
+#define function balanceOf(address) view returns(uint256)
+#define function allowance(address,address) view returns(uint256)
+
+#define function approve(address,uint256) nonpayable returns(bool)
+#define function transfer(address,uint256) nonpayable returns(bool)
+#define function transferFrom(address,address,uint256) nonpayable returns(bool)
+
+#define event Approval(address,address,uint256)
+#define event Transfer(address,address,uint256)
+
+#define function deposit() payable returns()
+#define function withdraw(uint256) nonpayable returns()
+
+#define event Deposit(address,uint256)
+#define event Withdrawl(address,uint256)
+
+/* Constant Definitions */
+#define constant INTERNAL_MPTR_OWNER = 0x60
+#define constant INTERNAL_MPTR_SPENDER = 0x80
+#define constant INTERNAL_MPTR_VALUE = 0xa0
+#define constant INTERNAL_MPTR_RECEIVER = 0xc0
+
+/* Macro Definitions */
+#define macro NAME() = takes(0) returns(0) {
+    // store string offset in memory
+    0x20                                        // [0x20]
+    0x00                                        // [0x00, 0x20]
+    mstore                                      // []
+
+    // store the string length concatenated with the string in memory
+    __RIGHTPAD(0x0d57726170706564204574686572)  // [13 . "Wrapped Ether"]
+    0x3f                                        // [0x20, 13 . "Wrapped Ether"]
+    mstore                                      // []
+
+    // return the string
+    0x60                                        // [0x60]
+    0x00                                        // [0x00, 0x60]
+    return                                      // []
+}
+
+#define macro SYMBOL() = takes(0) returns(0) {
+    // store string offset in memory
+    0x20                        // [0x20]
+    0x00                        // [0x00, 0x20]
+    mstore                      // []
+
+    // store the string length concatenated with the string in memory
+    __RIGHTPAD(0x0457455448)    // [4 . "WETH"]
+    0x3f                        // [0x20, 4 . "WETH"]
+    mstore
+
+    // return the string
+    0x60                        // [0x60]
+    0x00                        // [0x00, 0x60]
+    return                      // []
+}
+
+#define macro DECIMALS() = takes(0) returns(0) {
+    // store the decimals in memory
+    0x12    // [0x12]
+    0x00    // [0x00, 0x12]
+    mstore  // []
+
+    // return the decimals
+    0x20    // [0x20]
+    0x00    // [0x00, 0x20]
+    return  // []
+}
+
+#define macro TOTAL_SUPPLY() = takes(0) returns(0) {
+    // store current ether balance in memory
+    selfbalance // [selfbalance]
+    0x00        // [0x00, selfbalance]
+    mstore      // []
+
+    // return the current ether balance
+    0x20        // [0x20]
+    0x00        // [0x00, 0x20]
+    return      // []
+}
+
+#define macro BALANCE_OF() = takes(0) returns(0) {
+    // load the target from calldata
+    0x04            // [0x04]
+    calldataload    // [target]
+
+    // validate target
+    dup1            // [target, target]
+    0xa0            // [0xa0, target, target]
+    shr             // [target>>0xa0, target]
+    error           // [error, target>>0xa0, target]
+    jumpi           // [target]
+
+    // calculate the storage slot where token balance is stored
+    0x00            // [0x00, target]
+    mstore          // []
+    0x20            // [0x20]
+    0x00            // [0x00, 0x20]
+    sha3            // [slot]
+
+    // load token balance from storage and store in memory
+    sload           // [token_balance]
+    0x00            // [0x00, token_balance]
+    mstore          // []
+
+    // return the token balance
+    0x20            // [0x20]
+    0x00            // [0x00, 0x20]
+    return          // []
+}
+
+#define macro ALLOWANCE() = takes(0) returns(0) {
+    // load the owner from calldataload
+    0x04            // [0x04]
+    calldataload    // [owner]
+
+    // validate the owner
+    dup1            // [owner, owner]
+    0xa0            // [0xa0, owner, owner]
+    shr             // [owner>>0xa0, owner]
+    error           // [error, owner>>0xa0, owner]
+    jumpi           // [owner]
+
+    // load the spender from calldata
+    0x24            // [0x24, owner]
+    calldataload    // [spender, owner]
+
+    // validate the spender
+    dup1            // [spender, spender, owner]
+    0xa0            // [0xa0, spender, spender, owner]
+    shr             // [spender>>0xa0, spender, owner]
+    error           // [error, spender>>0xa0, spender, owner]
+    jumpi           // [spender, owner]
+
+    // calculate the storage slot where allowance is stored
+    0x00            // [0x00, spender, owner]
+    mstore          // [owner]
+    0x20            // [0x20, owner]
+    mstore          // []
+    0x40            // [0x40]
+    0x00            // [0x00, 0x40]
+    sha3            // [slot]
+
+    // load allowance from storage and store in memory
+    sload           // [allowance]
+    0x00            // [0x00, allowance]
+    mstore          // []
+
+    // return the token allowance
+    0x20            // [0x20]
+    0x00            // [0x00, 0x20]
+    return          // []
+}
+
+#define macro APPROVE() = takes(0) returns(0) {
+    // load the spender from calldata
+    0x20                    // [0x20]
+    0x04                    // [0x04, 0x20]
+    [INTERNAL_MPTR_SPENDER] // [INTERNAL_MPTR_SPENDER, 0x04, 0x20]
+    calldatacopy            // []
+    [INTERNAL_MPTR_SPENDER] // [INTERNAL_MPTR_SPENDER]
+    mload                   // [spender]
+
+    // validate the spender
+    0xa0                    // [0xa0, spender]
+    shr                     // [spender>>0xa0]
+    error                   // [error, spender>>0xa0]
+    jumpi                   // []
+
+    // load the approval amount from calldata
+    0x20                    // [0x20]
+    0x24                    // [0x24, 0x20]
+    [INTERNAL_MPTR_VALUE]   // [INTERNAL_MPTR_VALUE, 0x24, 0x20]
+    calldatacopy            // []
+
+    // store the owner in memory
+    caller                  // [owner]
+    [INTERNAL_MPTR_OWNER]   // [INTERNAL_MPTR_OWNER, owner]
+    mstore                  // []
+
+    // jump to internal approve
+    external_approve_return // [external_approve_return_jumpdest]
+    internal_approve        // [internal_approve_jumpdest, external_approve_return_jumpdest]
+    jump                    // []
+
+    // return true
+    external_approve_return:
+    0x01                    // [0x01]
+    0x00                    // [0x00, 0x01]
+    mstore                  // []
+    0x20                    // [0x20]
+    0x00                    // [0x00, 0x20]
+    return                  // []
+}
+
+#define macro TRANSFER() = takes(0) returns(0) {
+    // load the calldata into memory
+    0x20                        // [0x20]
+    0x04                        // [0x04, 0x20]
+    [INTERNAL_MPTR_RECEIVER]    // [INTERNAL_MPTR_RECEIVER, 0x04, 0x20]
+    calldatacopy                // []
+
+    0x20                        // [0x20]
+    0x24                        // [0x24, 0x20]
+    [INTERNAL_MPTR_VALUE]       // [value_ptr, 0x24, 0x20]
+    calldatacopy                // []
+
+    // load the spender and validate it
+    [INTERNAL_MPTR_RECEIVER]    // [INTERNAL_MPTR_RECEIVER]
+    mload                       // [spender]
+    0xa0                        // [0xa0, spender]
+    shr                         // [spender>>0xa0]
+    error                       // [error, spender>>0xa0]
+    jumpi                       // []
+
+    // store the caller in memory
+    caller                      // [caller]
+    [INTERNAL_MPTR_OWNER]       // [INTERNAL_MPTR_OWNER, caller]
+    mstore                      // []
+
+    // jump to internal transfer
+    external_approve_return     // [external_approve_return]
+    internal_transfer           // [internal_transfer, external_approve_return]
+    jump                        // []
+
+    // return true
+    external_transfer_return:
+    0x01                        // [0x01]
+    0x00                        // [0x00, 0x01]
+    mstore                      // []
+    0x20                        // [0x20]
+    0x00                        // [0x00, 0x20]
+    return                      // []
+}
+
+#define macro TRANSFER_FROM() = takes(0) returns(0) {
+    // load owner into memory
+    0x20                        // [0x20]
+    0x04                        // [0x04, 0x20]
+    [INTERNAL_MPTR_OWNER]       // [owner_ptr, 0x04, 0x20]
+    calldatacopy
+
+    // validate the owner
+    [INTERNAL_MPTR_OWNER]       // [owner_ptr]
+    mload                       // [owner]
+    0xa0                        // [0xa0, owner]
+    shr                         // [owner>>0xa0]
+    error                       // [error, owner>>0xa0]
+    jumpi                       // []
+
+    // load the receiver into memory
+    0x20                        // [0x20]
+    0x24                        // [0x24, 0x20]
+    [INTERNAL_MPTR_RECEIVER]    // [receiver_ptr, 0x24, 0x20]
+    calldatacopy                // []
+
+    // validate the receiver
+    [INTERNAL_MPTR_RECEIVER]    // [receiver_ptr]
+    mload                       // [receiver]
+    0xa0                        // [0xa0, receiver]
+    shr                         // [receiver>>0xa0]
+    error                       // [error, receiver>>0xa0]
+    jumpi                       // []
+
+    // load the value into memory
+    0x20                        // [0x20]
+    0x44                        // [0x44, 0x20]
+    [INTERNAL_MPTR_VALUE]       // [value_ptr, 0x44, 0x20]
+    calldatacopy                // []
+
+    // transfer subroutine
+    external_transfer_from_return_1
+    internal_transfer
+    jump
+
+    // validate the approval of the caller
+    external_transfer_from_return_1:
+    caller
+    [INTERNAL_MPTR_SPENDER]
+    mstore
+
+    // calculate allowance slot
+    caller
+    0x00
+    mstore
+
+    // load the owner and store in memory for slot calc
+    [INTERNAL_MPTR_OWNER]
+    mload
+    0x20
+    mstore
+
+    0x40
+    0x00
+    sha3
+    sload                       // [allowance]
+
+    [INTERNAL_MPTR_VALUE]
+    mload                       // [value, allowance]
+    dup2                        // [allowance, value, allowance]
+    sub                         // [new_allowance, allowance]
+    dup1                        // [new_allowance, new_allowance, allowance]
+    swap2                       // [allowance, new_allowance, new_allowance]
+    lt                          // [allowance<new_allowance, new_allowance]
+    error                       // [error, new_allowance>allowance, new_allowance]
+    jumpi                       // [new_allowance]
+
+    // store new_allowance in value slot
+    [INTERNAL_MPTR_VALUE]
+    mstore
+
+    external_transfer_from_return_2
+    internal_approve
+    jump
+
+    // return true
+    external_transfer_from_return_2:
+    0x01                        // [0x01]
+    0x00                        // [0x00, 0x01]
+    mstore                      // []
+    0x20                        // [0x20]
+    0x00                        // [0x00, 0x20]
+    return                      // []
+}
+
+#define macro DEPOSIT() = takes(0) returns(0) {
+    // require(callvalue != 0)
+    callvalue
+    iszero
+    error
+    jumpi
+
+    caller
+    0x00
+    mstore
+
+    0x20
+    0x00
+    sha3        // [slot]
+
+    dup1        // [slot, slot]
+    sload       // [caller_balance, slot]
+
+    dup1        // [caller_balance, caller_balance, slot]
+    callvalue   // [callvalue, caller_balance, caller_balance, slot]
+    add         // [new_balance, caller_balance, slot]
+    dup1        // [new_balance, new_balance, caller_balance, slot]
+    swap2       // [caller_balance, new_balance, new_balance, slot]
+    gt          // [caller_balance>new_balance, new_balance, slot]
+    error
+    jumpi
+
+    swap1
+    sstore
+
+    callvalue
+    0x00
+    mstore
+
+    caller
+    __EVENT_HASH(Deposit)
+    0x20
+    0x00
+    log2
+
+    0x00
+    dup1
+    return
+}
+
+#define macro WITHDRAW() = takes(0) returns(0) {
+    caller
+    0x00
+    mstore
+
+    0x20
+    0x00
+    sha3        // [slot]
+
+    dup1        // [slot, slot]
+    sload       // [balance, slot]
+
+    0x20
+    0x04
+    0x00
+    calldatacopy
+
+    0x00
+    mload       // [amount, balance, slot]
+
+    dup2
+    dup2        // [amount, balance, amount, balance, slot]
+    eq
+    success
+    jumpi       // [amount, balance, slot]
+
+    dup2
+    dup2
+    lt
+    success
+    jumpi
+
+    error
+    jump
+
+    success: // [amount, balance, slot]
+    sub     // [new_balance, slot]
+    swap1
+    sstore
+
+    caller
+    __EVENT_HASH(Withdrawl)
+    0x20
+    0x00
+    log2
+
+    0x00
+    dup1
+    dup1
+    dup1
+    dup1
+    mload
+    caller
+    gas
+    call
+
+    0x00
+    dup1
+    return
+}
+
+#define macro INTERNAL_APPROVE() = takes(1) returns(0) {
+    // stack: [return_jumpdest]
+
+    // load the value
+    [INTERNAL_MPTR_VALUE]   // [INTERNAL_MPTR_VALUE, return_jumpdest]
+    mload                   // [value, return_jumpdest]
+
+    // calculate storage slot and store amount
+    [INTERNAL_MPTR_SPENDER] // [INTERNAL_MPTR_SPENDER, value, return_jumpdest]
+    mload                   // [spender, value, return_jumpdest]
+    0x00                    // [0x00, spender, value, return_jumpdest]
+    mstore                  // [value, return_jumpdest]
+    [INTERNAL_MPTR_OWNER]   // [INTERNAL_MPTR_OWNER, value, return_jumpdest]
+    mload                   // [owner, value, return_jumpdest]
+    0x20                    // [0x20, owner, value, return_jumpdest]
+    mstore                  // [value, return_jumpdest]
+    0x40                    // [0x40, value, return_jumpdest]
+    0x00                    // [0x00, 0x40, value, return_jumpdest]
+    sha3                    // [slot, value, return_jumpdest]
+    sstore                  // return_jumpdest]
+
+    // log Approval event
+    [INTERNAL_MPTR_SPENDER] // [INTERNAL_MPTR_SPENDER, return_jumpdest]
+    mload                   // [spender, return_jumpdest]
+    [INTERNAL_MPTR_OWNER]   // [INTERNAL_MPTR_OWNER, spender, return_jumpdest]
+    mload                   // [owner, spender, return_jumpdest]
+    __EVENT_HASH(Approval)  // [approval_sig, owner, spender, return_jumpdest]
+    0x20                    // [0x20, approval_sig, owner, spender, return_jumpdest]
+    [INTERNAL_MPTR_VALUE]   // [INTERNAL_MPTR_SPENDER, 0x20, approval_sig, owner, spender, return_jumpdest]
+    log3                    // [return_jumpdest]
+
+    // jump back
+    jump                    // []
+}
+
+#define macro INTERNAL_TRANSFER() = takes(1) returns(0) {
+    // stack: [return_jumpdest]
+
+    // load the owner value
+    0x20                        // [0x20]
+    [INTERNAL_MPTR_OWNER]       // [INTERNAL_MPTR_OWNER, 0x20]
+    sha3                        // [slot]
+    sload                       // [owner_balance]
+
+    // load the transfer value
+    [INTERNAL_MPTR_VALUE]       // [INTERNAL_MPTR_VALUE, owner_balance]
+    mload                       // [value, owner_balance]
+
+    // validate there is no underflow require(new_balance<=owner_balance)
+    dup2                        // [owner_balance, value, owner_balance]
+    sub                         // [new_balance, owner_balance]
+    dup1                        // [new_balance, new_balance, owner_balance]
+    swap2                       // [owner_balance, new_balance, new_balance]
+    lt                          // [owner_balance<new_balance, new_balance]
+    error                       // [error, owner_balance<new_balance, new_balance]
+    jumpi                       // [new_balance]
+
+    // store new balance in owner slot
+    0x20                        // [0x20, new_balance]
+    [INTERNAL_MPTR_OWNER]       // [INTERNAL_MPTR_OWNER, 0x20, new_balance]
+    sha3                        // [slot, new_balance]
+    sstore                      // []
+
+    // load the receiver value
+    0x20                        // [0x20]
+    [INTERNAL_MPTR_RECEIVER]    // [INTERNAL_MPTR_RECEIVER, 0x20]
+    sha3                        // [slot]
+    sload                       // [receiver_balance]
+
+    // load the transfer value
+    [INTERNAL_MPTR_VALUE]       // [INTERNAL_MPTR_VALUE, receiver_balance]
+    mload                       // [value, receiver_balance]
+
+    // validate there is no overflow require(new_balance>=receiver_balance)
+    dup2                        // [receiver_balance, value, receiver_balance]
+    add                         // [new_balance, receiver_balance]
+    dup1                        // [new_balance, new_balance, receiver_balance]
+    swap2                       // [receiver_balance, new_balance, new_balance]
+    gt                          // [receiver_balance>new_balance, new_balance]
+    error                       // [error, receiver_balance>new_balance, new_balance]
+    jumpi                       // [new_balance]
+
+    // store new balance in receiver slot
+    0x20                        // [0x20, new_balance]
+    [INTERNAL_MPTR_RECEIVER]    // [INTERNAL_MPTR_RECEIVER, 0x20, new_balance]
+    sha3                        // [slot, new_balance]
+    sstore                      // []
+
+    // fire Transfer event
+    [INTERNAL_MPTR_RECEIVER]    // [INTERNAL_MPTR_RECEIVER]
+    mload                       // [receiver]
+    [INTERNAL_MPTR_OWNER]       // [INTERNAL_MPTR_OWNER, receiver]
+    mload                       // [owner, receiver]
+    __EVENT_HASH(Transfer)      // [transfer_topic, owner, receiver]
+    0x20                        // [0x20, transfer_topic, owner, receiver]
+    [INTERNAL_MPTR_VALUE]       // [INTERNAL_MPTR_VALUE, 0x20, transfer_topic, owner, receiver]
+    log3                        // []
+
+    jump                        // []
+}
+
+#define macro MAIN() = takes(0) returns(0) {
+    calldatasize iszero deposit jumpi
+
+    0x00 calldataload 0xe0 shr                          // [selector]
+
+    dup1 __FUNC_SIG(deposit) eq deposit jumpi           // [selector]
+
+    callvalue error jumpi
+
+    dup1 __FUNC_SIG(name) eq name jumpi                 // [selector]
+    dup1 __FUNC_SIG(symbol) eq symbol jumpi             // [selector]
+    dup1 __FUNC_SIG(decimals) eq decimals jumpi         // [selector]
+
+    dup1 __FUNC_SIG(totalSupply) eq totalSupply jumpi   // [selector]
+    dup1 __FUNC_SIG(balanceOf) eq balanceOf jumpi       // [selector]
+    dup1 __FUNC_SIG(allowance) eq allowance jumpi       // [selector]
+
+    dup1 __FUNC_SIG(approve) eq approve jumpi           // [selector]
+    dup1 __FUNC_SIG(transfer) eq transfer jumpi         // [selector]
+    dup1 __FUNC_SIG(transferFrom) eq transferFrom jumpi // [selector]
+    __FUNC_SIG(withdraw) eq withdraw jumpi              // []
+
+    error:
+        0x00 dup1 revert                                // [selector]
+
+    name:
+        NAME()
+    symbol:
+        SYMBOL()
+    decimals:
+        DECIMALS()
+    totalSupply:
+        TOTAL_SUPPLY()
+    balanceOf:
+        BALANCE_OF()
+    allowance:
+        ALLOWANCE()
+    approve:
+        APPROVE()
+    transfer:
+        TRANSFER()
+    transferFrom:
+        TRANSFER_FROM()
+    deposit:
+        DEPOSIT()
+    withdraw:
+        WITHDRAW()
+
+    internal_approve:
+        INTERNAL_APPROVE()
+    internal_transfer:
+        INTERNAL_TRANSFER()
+}
