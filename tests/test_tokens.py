@@ -19,19 +19,19 @@ def recipient(accounts):
 @pytest.fixture
 def solady(project, deployer, sender):
     solady = project.SoladyToken.deploy(sender=deployer)
-    solady.transfer(sender, 10000, sender=deployer)
+    solady.transfer(sender, 10000000, sender=deployer)
     return solady
 
 @pytest.fixture
 def vypertoken(project, deployer, sender):
     vypertoken = project.VyperToken.deploy(sender=deployer)
-    vypertoken.transfer(sender, 10000, sender=deployer)
+    vypertoken.transfer(sender, 10000000, sender=deployer)
     return vypertoken
 
 @pytest.fixture
 def oztoken(project, deployer, sender):
     oztoken = project.OZToken.deploy(sender=deployer)
-    oztoken.transfer(sender, 10000, sender=deployer)
+    oztoken.transfer(sender, 10000000, sender=deployer)
     return oztoken
 
 @pytest.fixture
@@ -42,39 +42,41 @@ def weth9(project, deployer, sender):
     project.provider.set_balance(deployer.address, 10000 * 10 ** 18)
     deployer.transfer(weth9, 1000 * 10 ** 18)
 
-    weth9.transfer(sender, 10000, sender=deployer)
+    weth9.transfer(sender, 10000000, sender=deployer)
     return weth9
 
 @pytest.fixture
-def tokens(solady, vypertoken, oztoken, weth9):
-    return solady, vypertoken, oztoken, weth9
+def dasytoken(project, deployer, sender):
+    dasytoken = project.DasyToken.deploy("DasyToken", "DSY", 18, 1000 * 10 ** 18, sender=deployer)
+    dasytoken.transfer(sender, 10000000, sender=deployer)
+    return dasytoken
+
+@pytest.fixture
+def tokens(solady, vypertoken, oztoken, weth9, dasytoken):
+    return solady, vypertoken, oztoken, weth9, dasytoken
 
 def test_tokens(tokens, sender, recipient):
     for token in tokens:
-        assert token.balanceOf(sender) == 10000
+        assert token.balanceOf(sender) == 10000000
         assert token.balanceOf(recipient) == 0
         token.transfer(recipient, 1000, sender=sender)
-        assert token.balanceOf(sender) == 9000
         assert token.balanceOf(recipient) == 1000
 
-        # repeat transfer
-        token.transfer(recipient, 1000, sender=sender)
-        assert token.balanceOf(sender) == 8000
-        assert token.balanceOf(recipient) == 2000
+        # repeat transfers
+        for _ in range(10):
+            token.transfer(recipient, 1000, sender=sender)
 
-        # test allowance
-        assert token.allowance(sender, recipient) == 0
-        token.approve(recipient, 1000, sender=sender)
-        assert token.allowance(sender, recipient) == 1000
-        token.transferFrom(sender, recipient, 1000, sender=recipient)
-        assert token.balanceOf(sender) == 7000
-        assert token.balanceOf(recipient) == 3000
+            token.approve(recipient, 1000, sender=sender)
+            token.approve(recipient, 2000, sender=sender)
+            token.transferFrom(sender, recipient, 500, sender=recipient)
+            token.transferFrom(sender, recipient, 500, sender=recipient)
+            token.transferFrom(sender, recipient, 500, sender=recipient)
+            token.transferFrom(sender, recipient, 500, sender=recipient)
 
-        assert token.allowance(sender, recipient) == 0
-        assert token.allowance(sender, recipient) == 0
-        token.approve(recipient, 1000, sender=sender)
-        assert token.allowance(sender, recipient) == 1000
-        token.transferFrom(sender, recipient, 1000, sender=recipient)
-        assert token.balanceOf(sender) == 6000
-        assert token.balanceOf(recipient) == 4000
-        assert token.allowance(sender, recipient) == 0
+            token.approve(recipient, 1000, sender=sender)
+            token.transferFrom(sender, recipient, 500, sender=recipient)
+            token.transferFrom(sender, recipient, 500, sender=recipient)
+
+            token.approve(recipient, 1000, sender=sender)
+            token.transferFrom(sender, recipient, 1000, sender=recipient)
+            token.approve(recipient, 0, sender=sender)

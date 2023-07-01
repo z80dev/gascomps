@@ -6,4 +6,5 @@
 .env
 .venv
 .pytest_cache
+frenv
 __pycache__

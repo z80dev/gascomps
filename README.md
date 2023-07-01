@@ -1,67 +1,64 @@
 # gas comparisons between solady and vyper
 
-`pip install eth-ape ape-huff`
+`pip install eth-ape ape-huff dasy ape-dasy`
 
 `ape plugins install .`
 
 `ape test --gas`
 
-# Results (reformatted by ChatGPT lol)
-```
-====================== Gas Profile: Allowance ======================
-  
-  Contract        Min     Max     Mean    Median  
- ──────────────────────────────────────────────────────── 
-  SoladyToken     24521   24521   24521   24521  
-  VyperToken      24318   24318   24318   24318  
-  OZToken         24645   24645   24645   24645  
-  WETH9           24178   24178   24178   24178  
-  
+# Results By Function
 
-====================== Gas Profile: Approve ======================
-  
-  Contract        Min     Max     Mean    Median  
- ──────────────────────────────────────────────────────── 
-  SoladyToken     24441   24441   24441   24441  
-  VyperToken      24294   24294   24294   24294  
-  OZToken         24735   24735   24735   24735  
-  WETH9           24157   24157   24157   24157  
-  
+**approve Gas**
 
-====================== Gas Profile: BalanceOf ======================
-  
-  Contract        Min     Max     Mean    Median  
- ──────────────────────────────────────────────────────── 
-  SoladyToken     23974   23974   23974   23974  
-  VyperToken      23818   23818   23818   23818  
-  OZToken         23991   23991   23991   23991  
-  WETH9           23773   23773   23773   23773  
+| Contract   | Min.  | Max.  | Mean  |
+|------------|-------|-------|-------|
+| WETH9      | 4257  | 24157 | 16757 |
+| DasyToken  | 4416  | 24316 | 16916 |
+| VyperToken | 4416  | 24316 | 16916 |
+| SoladyToken| 4541  | 24441 | 17041 |
+| OZToken    | 4835  | 24735 | 17335 |
 
+**balanceOf Gas**
 
-====================== Gas Profile: Transfer ======================
-  
-  Contract        Min     Max     Mean    Median  
- ──────────────────────────────────────────────────────── 
-  SoladyToken     12400   29500   23800   29500  
-  VyperToken      12547   29647   23947   29647  
-  OZToken         12904   30004   24304   30004  
-  WETH9           12110   29210   23510   29210  
-  
+| Contract   | Min. | Max. | Mean  |
+|------------|------|------|-------|
+| WETH9      | 23773| 23773| 23773 |
+| DasyToken  | 23794| 23794| 23794 |
+| VyperToken | 23840| 23840| 23840 |
+| SoladyToken| 23974| 23974| 23974 |
+| OZToken    | 23991| 23991| 23991 |
 
-====================== Gas Profile: TransferFrom ======================
-  
-  Contract        Min     Max     Mean    Median  
- ──────────────────────────────────────────────────────── 
-  SoladyToken     14112   14112   14112   14112  
-  VyperToken      14453   14453   14453   14453  
-  OZToken         14878   14878   14878   14878  
-  WETH9           15257   15257   15257   15257  
+**transfer Gas**
 
-```
+| Contract   | Min. | Max.  | Mean  |
+|------------|------|-------|-------|
+| WETH9      | 12110| 29210 | 14960 |
+| SoladyToken| 12400| 29500 | 15250 |
+| DasyToken  | 12454| 29554 | 15304 |
+| VyperToken | 12569| 29669 | 15419 |
+| OZToken    | 12904| 30004 | 15754 |
 
+**transferFrom Gas**
 
+| Contract   | Min. | Max.  | Mean  |
+|------------|------|-------|-------|
+| SoladyToken| 14112| 17639 | 16127 |
+| DasyToken  | 14379| 17973 | 16433 |
+| VyperToken | 14471| 18088 | 16538 |
+| OZToken    | 14878| 18597 | 17003 |
+| WETH9      | 15257| 19071 | 17436 |
 
-# output
+Finally, here are the contracts sorted by increasing total average gas usage:
+
+1. SoladyToken (72392 gas)
+2. DasyToken (72447 gas)
+3. VyperToken (72713 gas)
+4. WETH9 (72926 gas)
+5. OZToken (74083 gas)
+
+I've calculated the total gas usage for each contract by summing the mean gas usages of all functions for each contract.
+
+# raw output
 
 ```
 ================================= Gas Profile ==================================
@@ -69,45 +66,50 @@
                                                                 
   Method         Times called    Min.    Max.    Mean   Median  
  ────────────────────────────────────────────────────────────── 
-  allowance                 6   24521   24521   24521    24521  
-  approve                   2   24441   24441   24441    24441  
-  balanceOf                10   23974   23974   23974    23974  
-  transfer                  3   12400   29500   23800    29500  
-  transferFrom              2   14112   14112   14112    14112  
+  approve                  50    4541   24441   17041    24441  
+  balanceOf                 3   23974   23974   23974    23974  
+  transfer                 12   12400   29500   15250    12400  
+  transferFrom             70   14112   17639   16127    17639  
                                                                 
                          VyperToken Gas                         
                                                                 
   Method         Times called    Min.    Max.    Mean   Median  
  ────────────────────────────────────────────────────────────── 
-  allowance                 6   24318   24318   24318    24318  
-  approve                   2   24294   24294   24294    24294  
-  balanceOf                10   23818   23818   23818    23818  
-  transfer                  3   12547   29647   23947    29647  
-  transferFrom              2   14453   14453   14453    14453  
+  approve                  50    4416   24316   16916    24316  
+  balanceOf                 3   23840   23840   23840    23840  
+  transfer                 12   12569   29669   15419    12569  
+  transferFrom             70   14471   18088   16538    18088  
                                                                 
                           OZToken Gas                           
                                                                 
   Method         Times called    Min.    Max.    Mean   Median  
  ────────────────────────────────────────────────────────────── 
-  allowance                 6   24645   24645   24645    24645  
-  approve                   2   24735   24735   24735    24735  
-  balanceOf                10   23991   23991   23991    23991  
-  transfer                  3   12904   30004   24304    30004  
-  transferFrom              2   14878   14878   14878    14878  
+  approve                  50    4835   24735   17335    24735  
+  balanceOf                 3   23991   23991   23991    23991  
+  transfer                 12   12904   30004   15754    12904  
+  transferFrom             70   14878   18597   17003    18597  
                                                                 
                            WETH9 Gas                            
                                                                 
   Method         Times called    Min.    Max.    Mean   Median  
  ────────────────────────────────────────────────────────────── 
   0x                        1   46133   46133   46133    46133  
-  allowance                 6   24178   24178   24178    24178  
-  approve                   2   24157   24157   24157    24157  
-  balanceOf                10   23773   23773   23773    23773  
-  transfer                  3   12110   29210   23510    29210  
-  transferFrom              2   15257   15257   15257    15257  
+  approve                  50    4257   24157   16757    24157  
+  balanceOf                 3   23773   23773   23773    23773  
+  transfer                 12   12110   29210   14960    12110  
+  transferFrom             70   15257   19071   17436    19071  
+                                                                
+                         DasyToken Gas                          
+                                                                
+  Method         Times called    Min.    Max.    Mean   Median  
+ ────────────────────────────────────────────────────────────── 
+  approve                  50    4416   24316   16916    24316  
+  balanceOf                 3   23794   23794   23794    23794  
+  transfer                 12   12454   29554   15304    12454  
+  transferFrom             70   14379   17973   16433    17973  
                                                                 
 
-============================== 1 passed in 2.89s ===============================
+============================== 1 passed in 37.02s ==============================
 INFO: Stopping 'anvil' process.
 
 ```
