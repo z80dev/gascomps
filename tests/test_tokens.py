@@ -57,11 +57,24 @@ def test_tokens(tokens, sender, recipient):
         assert token.balanceOf(sender) == 9000
         assert token.balanceOf(recipient) == 1000
 
+        # repeat transfer
+        token.transfer(recipient, 1000, sender=sender)
+        assert token.balanceOf(sender) == 8000
+        assert token.balanceOf(recipient) == 2000
+
         # test allowance
         assert token.allowance(sender, recipient) == 0
         token.approve(recipient, 1000, sender=sender)
         assert token.allowance(sender, recipient) == 1000
         token.transferFrom(sender, recipient, 1000, sender=recipient)
-        assert token.balanceOf(sender) == 8000
-        assert token.balanceOf(recipient) == 2000
+        assert token.balanceOf(sender) == 7000
+        assert token.balanceOf(recipient) == 3000
+
+        assert token.allowance(sender, recipient) == 0
+        assert token.allowance(sender, recipient) == 0
+        token.approve(recipient, 1000, sender=sender)
+        assert token.allowance(sender, recipient) == 1000
+        token.transferFrom(sender, recipient, 1000, sender=recipient)
+        assert token.balanceOf(sender) == 6000
+        assert token.balanceOf(recipient) == 4000
         assert token.allowance(sender, recipient) == 0
