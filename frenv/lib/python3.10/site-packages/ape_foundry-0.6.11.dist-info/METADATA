@@ -1,0 +1,220 @@
+Metadata-Version: 2.1
+Name: ape-foundry
+Version: 0.6.11
+Summary: ape-foundry: Ape network provider for Foundry
+Home-page: https://github.com/ApeWorX/ape-foundry
+Author: ApeWorX Ltd.
+Author-email: admin@apeworx.io
+License: Apache-2.0
+Keywords: ethereum
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.8,<4
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: eth-ape (<0.7,>=0.6.9)
+Requires-Dist: evm-trace
+Requires-Dist: hexbytes
+Requires-Dist: web3
+Requires-Dist: yarl
+Provides-Extra: dev
+Requires-Dist: pytest (>=6.0) ; extra == 'dev'
+Requires-Dist: pytest-xdist ; extra == 'dev'
+Requires-Dist: pytest-cov ; extra == 'dev'
+Requires-Dist: hypothesis (<7.0,>=6.2.0) ; extra == 'dev'
+Requires-Dist: ape-alchemy ; extra == 'dev'
+Requires-Dist: ape-polygon ; extra == 'dev'
+Requires-Dist: black (<24,>=23.3.0) ; extra == 'dev'
+Requires-Dist: mypy (<1,>=0.991) ; extra == 'dev'
+Requires-Dist: types-requests ; extra == 'dev'
+Requires-Dist: types-setuptools ; extra == 'dev'
+Requires-Dist: types-PyYAML ; extra == 'dev'
+Requires-Dist: flake8 (<7,>=6.0.0) ; extra == 'dev'
+Requires-Dist: isort (<6,>=5.10.1) ; extra == 'dev'
+Requires-Dist: mdformat (>=0.7.16) ; extra == 'dev'
+Requires-Dist: mdformat-gfm (>=0.3.5) ; extra == 'dev'
+Requires-Dist: mdformat-frontmatter (>=0.4.1) ; extra == 'dev'
+Requires-Dist: Sphinx (<7,>=6.1.3) ; extra == 'dev'
+Requires-Dist: sphinx-rtd-theme (<2,>=1.2.0) ; extra == 'dev'
+Requires-Dist: towncrier (<20,>=19.2.0) ; extra == 'dev'
+Requires-Dist: setuptools ; extra == 'dev'
+Requires-Dist: setuptools-scm ; extra == 'dev'
+Requires-Dist: wheel ; extra == 'dev'
+Requires-Dist: twine ; extra == 'dev'
+Requires-Dist: commitizen ; extra == 'dev'
+Requires-Dist: pre-commit ; extra == 'dev'
+Requires-Dist: IPython ; extra == 'dev'
+Requires-Dist: ipdb ; extra == 'dev'
+Provides-Extra: doc
+Requires-Dist: Sphinx (<7,>=6.1.3) ; extra == 'doc'
+Requires-Dist: sphinx-rtd-theme (<2,>=1.2.0) ; extra == 'doc'
+Requires-Dist: towncrier (<20,>=19.2.0) ; extra == 'doc'
+Provides-Extra: lint
+Requires-Dist: black (<24,>=23.3.0) ; extra == 'lint'
+Requires-Dist: mypy (<1,>=0.991) ; extra == 'lint'
+Requires-Dist: types-requests ; extra == 'lint'
+Requires-Dist: types-setuptools ; extra == 'lint'
+Requires-Dist: types-PyYAML ; extra == 'lint'
+Requires-Dist: flake8 (<7,>=6.0.0) ; extra == 'lint'
+Requires-Dist: isort (<6,>=5.10.1) ; extra == 'lint'
+Requires-Dist: mdformat (>=0.7.16) ; extra == 'lint'
+Requires-Dist: mdformat-gfm (>=0.3.5) ; extra == 'lint'
+Requires-Dist: mdformat-frontmatter (>=0.4.1) ; extra == 'lint'
+Provides-Extra: release
+Requires-Dist: setuptools ; extra == 'release'
+Requires-Dist: setuptools-scm ; extra == 'release'
+Requires-Dist: wheel ; extra == 'release'
+Requires-Dist: twine ; extra == 'release'
+Provides-Extra: test
+Requires-Dist: pytest (>=6.0) ; extra == 'test'
+Requires-Dist: pytest-xdist ; extra == 'test'
+Requires-Dist: pytest-cov ; extra == 'test'
+Requires-Dist: hypothesis (<7.0,>=6.2.0) ; extra == 'test'
+Requires-Dist: ape-alchemy ; extra == 'test'
+Requires-Dist: ape-polygon ; extra == 'test'
+
+# Quick Start
+
+Foundry network provider plugin for Ape.
+Foundry is a development framework written in Rust for Ethereum that includes a local network implementation.
+
+## Dependencies
+
+- [python3](https://www.python.org/downloads) version 3.8 up to 3.11.
+- Foundry. See Foundry's [Installation](https://github.com/foundry-rs/foundry#installation) documentation for steps.
+
+## Installation
+
+### via `pip`
+
+You can install the latest release via [`pip`](https://pypi.org/project/pip/):
+
+```bash
+pip install ape-foundry
+```
+
+### via `setuptools`
+
+You can clone the repository and use [`setuptools`](https://github.com/pypa/setuptools) for the most up-to-date version:
+
+```bash
+git clone https://github.com/ApeWorX/ape-foundry.git
+cd ape-foundry
+python3 setup.py install
+```
+
+## Quick Usage
+
+Use the `--network ethereum:local:foundry` command line flag to use the foundry network (if it's not already configured as the default).
+
+This network provider takes additional Foundry-specific configuration options. To use them, add these configs in your project's `ape-config.yaml`:
+
+```yaml
+foundry:
+  port: 8555
+```
+
+To select a random port, use a value of "auto":
+
+```yaml
+foundry:
+  port: auto
+```
+
+This is useful for multiprocessing and starting up multiple providers.
+
+You can also adjust the request timeout setting:
+
+```yaml
+foundry:
+  request_timeout: 20  # Defaults to 30
+  fork_request_timeout: 600  # Defaults to 300
+```
+
+## Mainnet Fork
+
+The `ape-foundry` plugin also includes a mainnet fork provider.
+It requires using another provider that has access to mainnet.
+
+Use it in most commands like this:
+
+```bash
+ape console --network :mainnet-fork:foundry
+```
+
+Specify the upstream archive-data provider in your `ape-config.yaml`:
+
+```yaml
+foundry:
+  fork:
+    ethereum:
+      mainnet:
+        upstream_provider: alchemy
+```
+
+Otherwise, it defaults to the default mainnet provider plugin.
+You can also specify a `block_number` and `evm_version`.
+
+If the block number is specified, but no EVM version is specified, it is automatically set based on the block height for known networks.
+
+**NOTE**: Make sure you have the upstream provider plugin installed for ape.
+
+```bash
+ape plugins install alchemy
+```
+
+## Remote Anvil Node
+
+To connect to a remote anvil node, set up your config like this:
+
+```yaml
+foundry:
+  host: https://anvil.example.com
+```
+
+Now, instead of launching a local process, it will attempt to connect to the remote anvil node and use this plugin as the ape interface.
+
+## Impersonate Accounts
+
+You can impersonate accounts using the `ape-foundry` plugin.
+To impersonate an account, do the following:
+
+```python
+import pytest
+
+@pytest.fixture
+def whale(accounts):
+    return accounts["example.eth"]
+```
+
+To transact, your impersonated account must have a balance.
+You can achieve this by using a forked network and impersonating an account with a balance.
+Alternatively, you can set your node's base fee and priority fee to `0`.
+
+To programtically set an account's balance, do the following:
+
+```python
+from ape import accounts
+
+account = accounts["example.eth"]
+account.balance = "1000 ETH"  # This calls `anvil_setBalance` under-the-hood.
+```
+
+## Base Fee and Priority Fee
+
+Configure your node's base fee and priority fee using the `ape-config.yaml` file.
+
+```yaml
+foundry:
+  base_fee: 0
+  priority_fee: 0
+```

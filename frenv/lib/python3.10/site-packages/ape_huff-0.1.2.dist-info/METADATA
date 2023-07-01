@@ -1,0 +1,69 @@
+Metadata-Version: 2.1
+Name: ape-huff
+Version: 0.1.2
+Summary: Huff compiler plugin for the eth-ape development framework
+Author: 0xcefa1090d
+License: MIT License
+        
+        Copyright (c) 2023 0xcefa1090d
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Homepage, https://github.com/0xcefa1090d/ape-huff
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: eth-ape
+Requires-Dist: py-huffc
+Provides-Extra: dev
+Requires-Dist: black ; extra == 'dev'
+Requires-Dist: build ; extra == 'dev'
+Requires-Dist: flake8 ; extra == 'dev'
+Requires-Dist: isort ; extra == 'dev'
+Requires-Dist: pre-commit ; extra == 'dev'
+Requires-Dist: twine ; extra == 'dev'
+
+# ape-huff
+
+Huff compiler plugin for the eth-ape development framework
+
+## Dependencies
+
+To build binaries from source when a pre-built binary isn't available the build tool `cargo` must be installed. Refer to the `cargo`
+[documentation](https://doc.rust-lang.org/cargo/) for instruction on installing it.
+
+## Installation
+
+```bash
+$ pip install ape-huff
+```
+
+## Usage
+
+To use the `ape-huff` plugin simply include huff contracts (files with the `.huff` extension) in your project's `contracts/` directory.
+
+### Selecting a Version
+
+By default `ape-huff` will use the latest stable huff release to compile contracts. To customize the version used
+update your `ape-config.yaml` to include the following:
+
+```yaml
+huff:
+  version: 0.3.1
+```

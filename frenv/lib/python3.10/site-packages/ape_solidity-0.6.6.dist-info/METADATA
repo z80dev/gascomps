@@ -1,0 +1,197 @@
+Metadata-Version: 2.1
+Name: ape-solidity
+Version: 0.6.6
+Summary: Plugin for Ape Ethereum Framework for compiling Solidity contracts
+Home-page: https://github.com/ApeWorX/ape-solidity
+Author: ApeWorX Ltd.
+Author-email: admin@apeworx.io
+License: Apache-2.0
+Keywords: ethereum
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.8,<4
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: py-solc-x (<2,>=1.1.0)
+Requires-Dist: eth-ape (<0.7,>=0.6.9)
+Requires-Dist: ethpm-types
+Requires-Dist: packaging
+Requires-Dist: requests
+Requires-Dist: typing-extensions (==4.5.0)
+Provides-Extra: dev
+Requires-Dist: pytest (>=6.0) ; extra == 'dev'
+Requires-Dist: pytest-xdist ; extra == 'dev'
+Requires-Dist: pytest-cov ; extra == 'dev'
+Requires-Dist: hypothesis (<7.0,>=6.2.0) ; extra == 'dev'
+Requires-Dist: black (<24,>=23.3.0) ; extra == 'dev'
+Requires-Dist: mypy (<1,>=0.991) ; extra == 'dev'
+Requires-Dist: types-requests ; extra == 'dev'
+Requires-Dist: types-setuptools ; extra == 'dev'
+Requires-Dist: types-pkg-resources ; extra == 'dev'
+Requires-Dist: flake8 (<7,>=6.0.0) ; extra == 'dev'
+Requires-Dist: isort (<6,>=5.10.1) ; extra == 'dev'
+Requires-Dist: mdformat (>=0.7.16) ; extra == 'dev'
+Requires-Dist: mdformat-gfm (>=0.3.5) ; extra == 'dev'
+Requires-Dist: mdformat-frontmatter (>=0.4.1) ; extra == 'dev'
+Requires-Dist: Sphinx (<4,>=3.4.3) ; extra == 'dev'
+Requires-Dist: sphinx-rtd-theme (<1,>=0.1.9) ; extra == 'dev'
+Requires-Dist: towncrier (<20,>=19.2.0) ; extra == 'dev'
+Requires-Dist: setuptools ; extra == 'dev'
+Requires-Dist: setuptools-scm ; extra == 'dev'
+Requires-Dist: wheel ; extra == 'dev'
+Requires-Dist: twine (==3.8) ; extra == 'dev'
+Requires-Dist: commitizen ; extra == 'dev'
+Requires-Dist: pytest-watch ; extra == 'dev'
+Requires-Dist: IPython ; extra == 'dev'
+Requires-Dist: ipdb ; extra == 'dev'
+Provides-Extra: doc
+Requires-Dist: Sphinx (<4,>=3.4.3) ; extra == 'doc'
+Requires-Dist: sphinx-rtd-theme (<1,>=0.1.9) ; extra == 'doc'
+Requires-Dist: towncrier (<20,>=19.2.0) ; extra == 'doc'
+Provides-Extra: lint
+Requires-Dist: black (<24,>=23.3.0) ; extra == 'lint'
+Requires-Dist: mypy (<1,>=0.991) ; extra == 'lint'
+Requires-Dist: types-requests ; extra == 'lint'
+Requires-Dist: types-setuptools ; extra == 'lint'
+Requires-Dist: types-pkg-resources ; extra == 'lint'
+Requires-Dist: flake8 (<7,>=6.0.0) ; extra == 'lint'
+Requires-Dist: isort (<6,>=5.10.1) ; extra == 'lint'
+Requires-Dist: mdformat (>=0.7.16) ; extra == 'lint'
+Requires-Dist: mdformat-gfm (>=0.3.5) ; extra == 'lint'
+Requires-Dist: mdformat-frontmatter (>=0.4.1) ; extra == 'lint'
+Provides-Extra: release
+Requires-Dist: setuptools ; extra == 'release'
+Requires-Dist: setuptools-scm ; extra == 'release'
+Requires-Dist: wheel ; extra == 'release'
+Requires-Dist: twine (==3.8) ; extra == 'release'
+Provides-Extra: test
+Requires-Dist: pytest (>=6.0) ; extra == 'test'
+Requires-Dist: pytest-xdist ; extra == 'test'
+Requires-Dist: pytest-cov ; extra == 'test'
+Requires-Dist: hypothesis (<7.0,>=6.2.0) ; extra == 'test'
+
+# Quick Start
+
+Compile Solidity contracts.
+
+## Dependencies
+
+- [python3](https://www.python.org/downloads) version 3.8 up to 3.11.
+
+## Installation
+
+### via `pip`
+
+You can install the latest release via [`pip`](https://pypi.org/project/pip/):
+
+```bash
+pip install ape-solidity
+```
+
+### via `setuptools`
+
+You can clone the repository and use [`setuptools`](https://github.com/pypa/setuptools) for the most up-to-date version:
+
+```bash
+git clone https://github.com/ApeWorX/ape-solidity.git
+cd ape-solidity
+python3 setup.py install
+```
+
+## Quick Usage
+
+In your project, make sure you have a `contracts/` directory containing Solidity files (`.sol`).
+
+Then, while this plugin is installed, compile your contracts:
+
+```bash
+ape compile
+```
+
+The byte-code and ABI for your contracts should now exist in a `__local__.json` file in a `.build/` directory.
+
+### Dependency Mapping
+
+To configure import remapping, use your project's `ape-config.yaml` file:
+
+```yaml
+solidity:
+  import_remapping:
+    - "@openzeppelin=path/to/open_zeppelin/contracts"
+```
+
+If you are using the `dependencies:` key in your `ape-config.yaml`, `ape` can automatically
+search those dependencies for the path.
+
+```yaml
+dependencies:
+  - name: OpenZeppelin
+    github: OpenZeppelin/openzeppelin-contracts
+    version: 4.4.2
+
+solidity:
+  import_remapping:
+    - "@openzeppelin=OpenZeppelin/4.4.2"
+```
+
+Once you have your dependencies configured, you can import packages using your import keys:
+
+```solidity
+import "@openzeppelin/token/ERC721/ERC721.sol";
+```
+
+### Library Linking
+
+To compile contracts that use libraries, you need to add the libraries first.
+Use the `add_library()` method from the `ape-solidity` compiler class to add the library.
+A typical flow is:
+
+1. Deploy the library.
+2. Call `add_library()` using the Solidity compiler plugin, which will also re-compile contracts that need the library.
+3. Deploy and use contracts that require the library.
+
+For example:
+
+```python
+import pytest
+
+
+@pytest.fixture
+def contract(accounts, project, compilers):
+    # Deploy the library.
+    account = accounts[0]
+    library = project.Set.deploy(sender=account)
+    
+    # Add the library to Solidity (re-compiles contracts that use the library).
+    compilers.solidity.add_library(library)
+
+    # Deploy the contract that uses the library.
+    return project.C.deploy(sender=account)
+```
+
+### Compiler Settings
+
+When using `ape-solidity`, your project's manifest's compiler settings will include standard JSON output.
+You should have one listed `compiler` per `solc` version used in your project.
+You can view your current project manifest, including the compiler settings, by doing:
+
+```python
+from ape import project
+
+manifest = project.extract_manifest()
+
+for compiler_entry in manifest.compilers:
+    print(compiler_entry.version)
+    print(compiler_entry.settings)
+```
+
+**NOTE**: These are the settings used during contract verification when using the [Etherscan plugin](https://github.com/ApeWorX/ape-etherscan).

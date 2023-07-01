@@ -1,0 +1,142 @@
+Metadata-Version: 2.1
+Name: ape-vyper
+Version: 0.6.8
+Summary: Plugin for Ape Ethereum Framework for compiling Vyper contracts
+Home-page: https://github.com/ApeWorX/ape-vyper
+Author: ApeWorX Ltd.
+Author-email: admin@apeworx.io
+License: Apache-2.0
+Keywords: ethereum
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.8,<4
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: eth-ape (<0.7,>=0.6.10)
+Requires-Dist: ethpm-types
+Requires-Dist: tqdm
+Requires-Dist: vvm (<0.2,>=0.1.0)
+Provides-Extra: dev
+Requires-Dist: pytest (>=6.0) ; extra == 'dev'
+Requires-Dist: pytest-mock ; extra == 'dev'
+Requires-Dist: pytest-xdist ; extra == 'dev'
+Requires-Dist: pytest-cov ; extra == 'dev'
+Requires-Dist: hypothesis (<7.0,>=6.2.0) ; extra == 'dev'
+Requires-Dist: black (<24,>=23.3.0) ; extra == 'dev'
+Requires-Dist: mypy (<1,>=0.991) ; extra == 'dev'
+Requires-Dist: types-setuptools ; extra == 'dev'
+Requires-Dist: flake8 (<7,>=6.0.0) ; extra == 'dev'
+Requires-Dist: isort (>=5.10.1) ; extra == 'dev'
+Requires-Dist: mdformat (>=0.7.16) ; extra == 'dev'
+Requires-Dist: mdformat-gfm (>=0.3.5) ; extra == 'dev'
+Requires-Dist: mdformat-frontmatter (>=0.4.1) ; extra == 'dev'
+Requires-Dist: setuptools ; extra == 'dev'
+Requires-Dist: wheel ; extra == 'dev'
+Requires-Dist: twine ; extra == 'dev'
+Requires-Dist: commitizen ; extra == 'dev'
+Requires-Dist: pre-commit ; extra == 'dev'
+Requires-Dist: pytest-watch ; extra == 'dev'
+Requires-Dist: IPython ; extra == 'dev'
+Requires-Dist: ipdb ; extra == 'dev'
+Provides-Extra: lint
+Requires-Dist: black (<24,>=23.3.0) ; extra == 'lint'
+Requires-Dist: mypy (<1,>=0.991) ; extra == 'lint'
+Requires-Dist: types-setuptools ; extra == 'lint'
+Requires-Dist: flake8 (<7,>=6.0.0) ; extra == 'lint'
+Requires-Dist: isort (>=5.10.1) ; extra == 'lint'
+Requires-Dist: mdformat (>=0.7.16) ; extra == 'lint'
+Requires-Dist: mdformat-gfm (>=0.3.5) ; extra == 'lint'
+Requires-Dist: mdformat-frontmatter (>=0.4.1) ; extra == 'lint'
+Provides-Extra: release
+Requires-Dist: setuptools ; extra == 'release'
+Requires-Dist: wheel ; extra == 'release'
+Requires-Dist: twine ; extra == 'release'
+Provides-Extra: test
+Requires-Dist: pytest (>=6.0) ; extra == 'test'
+Requires-Dist: pytest-mock ; extra == 'test'
+Requires-Dist: pytest-xdist ; extra == 'test'
+Requires-Dist: pytest-cov ; extra == 'test'
+Requires-Dist: hypothesis (<7.0,>=6.2.0) ; extra == 'test'
+
+# Quick Start
+
+Ape compiler plugin around [VVM](https://github.com/vyperlang/vvm)
+
+## Dependencies
+
+- [python3](https://www.python.org/downloads) version 3.8 up to 3.11.
+
+## Installation
+
+### via `pip`
+
+You can install the latest release via [`pip`](https://pypi.org/project/pip/):
+
+```bash
+pip install ape-vyper
+```
+
+### via `setuptools`
+
+You can clone the repository and use [`setuptools`](https://github.com/pypa/setuptools) for the most up-to-date version:
+
+```bash
+git clone https://github.com/ApeWorX/ape-vyper.git
+cd ape-vyper
+python3 setup.py install
+```
+
+## Quick Usage
+
+First, place Vyper contract source files (files with extension `.vy`) in your Ape project's contracts folder.
+An example Vyper contract can be found [here](https://vyper.readthedocs.io/en/stable/vyper-by-example.html).
+Then, from your root Ape project folder, run the command:
+
+```bash
+ape compile
+```
+
+The `.vy` files in your project will compile into `ContractTypes` that you can deploy and interact with in Ape.
+
+### Interfaces
+
+You can not compile interface source files directly.
+Thus, you must place interface files in a directory named `interfaces` in your `contracts_folder` e.g. `contracts/interfaces/IFace.vy`.
+Then, these files can be imported in other `.vy` sources files via:
+
+```python
+import interfaces.IFace as IFace
+```
+
+Alternatively, use JSON interfaces from dependency contract types by listing them under the `import_remapping` key:
+
+```yaml
+# Use `voting` example contracts from Vyperlang repo.
+dependencies:
+  - name: VyperVoting
+    github: vyperlang/vyper
+    contracts_folder: examples/voting/
+    version: v0.3.8
+
+# Automatically allow importing voting contracts in your project.
+vyper:
+  import_remapping:
+    - "voting=VyperVoting@v0.3.8"
+```
+
+Import the voting contract types like this:
+
+```python
+# @version 0.3.9
+
+import voting.ballot as ballot
+```
