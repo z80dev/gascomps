@@ -48,7 +48,6 @@ def decreaseAllowance(spender: address, subtractedValue: uint256) -> bool:
 
 @external
 def transfer(_to: address, _value: uint256) -> bool:
-    assert self.balanceOf[msg.sender] >= _value
     self.balanceOf[msg.sender] -= _value
     self.balanceOf[_to] += _value
     log Transfer(msg.sender, _to, _value)
@@ -56,8 +55,6 @@ def transfer(_to: address, _value: uint256) -> bool:
 
 @external
 def transferFrom(_from: address, _to: address, _value: uint256) -> bool:
-    assert self.balanceOf[_from] >= _value
-    assert self.allowance[_from][msg.sender] >= _value
     self.allowance[_from][msg.sender] -= _value
     self.balanceOf[_from] -= _value
     self.balanceOf[_to] += _value
