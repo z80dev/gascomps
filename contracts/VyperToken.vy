@@ -1,18 +1,9 @@
-# @version ^0.3.9
+#pragma version ~=0.4.1
+#pragma experimental-codegen
 
-from vyper.interfaces import ERC20
+from ethereum.ercs import IERC20
 
-implements: ERC20
-
-event Transfer:
-    _from: indexed(address)
-    _to: indexed(address)
-    _value: uint256
-
-event Approval:
-    _owner: indexed(address)
-    _spender: indexed(address)
-    _value: uint256
+implements: IERC20
 
 name: public(immutable(String[10]))
 symbol: public(immutable(String[3]))
@@ -22,7 +13,7 @@ totalSupply: public(uint256)
 balanceOf: public(HashMap[address, uint256])
 allowance: public(HashMap[address, HashMap[address, uint256]])
 
-@external
+@deploy
 def __init__():
     name = "Vypercoin"
     symbol = "VYC"
@@ -31,26 +22,26 @@ def __init__():
 @external
 def approve(spender: address, amount: uint256) -> bool:
     self.allowance[msg.sender][spender] = amount
-    log Approval(msg.sender, spender, amount)
+    log IERC20.Approval(msg.sender, spender, amount)
     return True
 
 @external
 def increaseAllowance(spender: address, addedValue: uint256) -> bool:
     self.allowance[msg.sender][spender] += addedValue
-    log Approval(msg.sender, spender, self.allowance[msg.sender][spender])
+    log IERC20.Approval(msg.sender, spender, self.allowance[msg.sender][spender])
     return True
 
 @external
 def decreaseAllowance(spender: address, subtractedValue: uint256) -> bool:
     self.allowance[msg.sender][spender] -= subtractedValue
-    log Approval(msg.sender, spender, self.allowance[msg.sender][spender])
+    log IERC20.Approval(msg.sender, spender, self.allowance[msg.sender][spender])
     return True
 
 @external
 def transfer(_to: address, _value: uint256) -> bool:
     self.balanceOf[msg.sender] -= _value
     self.balanceOf[_to] += _value
-    log Transfer(msg.sender, _to, _value)
+    log IERC20.Transfer(msg.sender, _to, _value)
     return True
 
 @external
@@ -58,7 +49,7 @@ def transferFrom(_from: address, _to: address, _value: uint256) -> bool:
     self.allowance[_from][msg.sender] -= _value
     self.balanceOf[_from] -= _value
     self.balanceOf[_to] += _value
-    log Transfer(_from, _to, _value)
+    log IERC20.Transfer(_from, _to, _value)
     return True
 
 ################################################################
@@ -93,17 +84,17 @@ def permit(owner: address, spender: address, amount: uint256, deadline: uint256,
     assert owner == ecrecover(hash, v, r, s)
     self.nonces[owner] += 1
     self.allowance[owner][spender] = amount
-    log Approval(owner, spender, amount)
+    log IERC20.Approval(owner, spender, amount)
 
 @internal
 def _mint(_to: address, _value: uint256):
     self.balanceOf[_to] += _value
     self.totalSupply += _value
-    log Transfer(ZERO_ADDRESS, _to, _value)
+    log IERC20.Transfer(empty(address), _to, _value)
 
 @internal
 def _burn(_from: address, _value: uint256):
     assert self.balanceOf[_from] >= _value
     self.balanceOf[_from] -= _value
     self.totalSupply -= _value
-    log Transfer(_from, ZERO_ADDRESS, _value)
+    log IERC20.Transfer(_from, empty(address), _value)

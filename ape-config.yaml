@@ -25,3 +25,4 @@ solidity:
   import_remapping:
     - "@solady=Solady/main"
     - "@openzeppelin=OpenZeppelin/master"
+  via_ir: true

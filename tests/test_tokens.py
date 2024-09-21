@@ -52,8 +52,15 @@ def dasytoken(project, deployer, sender):
     return dasytoken
 
 @pytest.fixture
-def tokens(solady, vypertoken, oztoken, weth9, dasytoken):
-    return solady, vypertoken, oztoken, weth9, dasytoken
+def snekmate(project, deployer, sender):
+    snekmate = project.Snekmate.deploy("Snekmate", "SNEK", 1000 * 10 ** 18, "GasComps", "v0.0.1", sender=deployer)
+    snekmate.transfer(sender, 10000000, sender=deployer)
+    return snekmate
+
+
+@pytest.fixture
+def tokens(solady, vypertoken, snekmate, oztoken):
+    return solady, vypertoken, snekmate, oztoken
 
 def test_tokens(tokens, sender, recipient):
     for token in tokens:
